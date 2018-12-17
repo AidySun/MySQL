@@ -2,8 +2,8 @@
 
 ## Execute Path
 * Connector
-  * long-time transation will cause OOM
-  * solutions for long-time transation
+  * long-time transaction will cause OOM
+  * solutions for long-time transaction
     * disconnect termly
     * `mysql_reset_connect` (after v5.7) will reset to status as just connected. No reconnection and authentication needed.
 * Cache  -  Analyzer
@@ -30,26 +30,26 @@
     * view is created at the begining of the execution of SQL
     * default setting of Oracle 
   3. repeatable read
-    * view is created at the begining of transation
+    * view is created at the begining of transaction
   4. serializable
     * no view? using locks
 
 ```SQL
-show variables like 'transation_isolation';
+show variables like 'transaction_isolation';
 # READ-COMMITTED
 ```
 * Implementation of Isolation
 Each update would record one rollback operation. _from the latest status, it can get to previous status using rollback operation. rollback operations would be deleted when there is no SQL would uses it, that is when there is no earlier read-view than the rollback log_
-  * this is why long-time transation would cause OOM
+  * this is why long-time transaction would cause OOM
 
 * MVCC - multi-version concurrency control
 
-* Ways to Launch Transation
-  1. start and commit transation obversely
+* Ways to Launch Transaction
+  1. start and commit transaction obversely
   2. `set autocommit=1` is recommended
-    * commit work and chain would commit the transation and start next transation, this would avoid extral begin
+    * commit work and chain would commit the transaction and start next transaction, this would avoid extral begin
 
-* Get long-time transation longer than 60 seconds
+* Get long-time transaction longer than 60 seconds
   `select * from information_schema.innodb_trx where TIME_TO_SEC(tiediff(now(), trx_started))>60` 
 
 ## Index
@@ -84,6 +84,38 @@ Self-increamental key is good for performance and storage.
   * filter index first, less access to real table data
 
 ## Lock
+1. Global Lock
+  * FTWRL - flush tables with read lock
+  * ehtire database is read-only
+  * used for database backup
+  * used by engine myISAM, because it does NOT support transaction
+  For engine InnoDB, it supports transaction, therefore it can start a repeatable read transaction to create a view for backup, which wouldn't lock database for updates.
+  ```
+  Global lock v.s. set global readonly = true
+    1) sometimes, global readonly is used in business logic 
+       E.g. identify the database is primary or secondary
+    2) when exception happens, MySQL would release the global lock when using FTWRL, 
+       while global readonly won't be set to false automatically
+  ```
+
+  * DML _(data manipulation language)_ - add/delete/update/query data
+  * DDL _(deta definition language)_ - change table structure (alter table)
+
+2. Table Level Lock
+  * table lock
+    * `lock tables t1 read, t2 write;`
+  * MDL - meta data lock
+    * not used manually, it is added to tables automatically
+    * when add/delete/update/read a table, MDL read lock is added; when changing a table structure, MDL write lock is added
+    * read locks are not mutually exclusive(互斥的); read locks and write locks, between write locks are mutually exclusive
+
+  **Note:** MDLs in transaction are created at the beginning of the execution, but won't be released after the execution, they would be release after the commition of transaction.
+    * How to change the structure of a small table without blocking(阻塞)?
+      * avoid long-time transaction. Long-time transaction would hold the MDL locks. 
+        * Before processing DDL, stop DDL first, or, kill long-time transactions which are stored in table `innodb_trx` of db `information_schema`
+      * when `kill` doesn't work. set timeout in `alter table` syntax, give up if it cannot get write lock and try later
+
+3. Row Lock
 
 
 
