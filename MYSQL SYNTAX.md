@@ -27,3 +27,13 @@ $ mysqlsh user@host/db_name
 # exec
 > \source /mydb.sql
 ```
+
+## Notes
+
+* How to store array?
+```cpp
+// There is no array type in database.
+// In source code, using following methods to convert between string and array
+implode(); // convert array to string
+explode(); // convert string array
+```
