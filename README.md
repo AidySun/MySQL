@@ -47,12 +47,13 @@ Each update would record one rollback operation. _from the latest status, it can
 * Ways to Launch Transaction
   1. start and commit transaction obversely
   2. `set autocommit=1` is recommended
-    * commit work and chain would commit the transaction and start next transaction, this would avoid extral begin
+    * commit work and chain would commit the transaction and start next transaction, this would avoid extra begin
 
 * Get long-time transaction longer than 60 seconds
   `select * from information_schema.innodb_trx where TIME_TO_SEC(tiediff(now(), trx_started))>60` 
 
 ## Index
+
 * Implementation (data model of database)
   1. Hash table
     * good for fixed value, insertion
@@ -68,12 +69,36 @@ Each update would record one rollback operation. _from the latest status, it can
   4. jump list, LSM tree...
 
 * Index of InnoDB
-InnoDB uses B+ tree to implement its index model.
+  * InnoDB uses B+ tree to implement its index model.
+  * `int` type index in InnoDB, using multiple tree (about 1200).
+  * **each index is a B+ tree**
 
-* key index (clustered index)
-* secondary index
+* primary key index (clustered index)
+* secondary index (non-primary key)
+  ```sql
+  CREATE TABLE T (
+    id INT PRIMARY KEY, -- primary/clustered index
+    k INT NOT NULL,
+    name varchar(32),
+    INDEX (k)            -- secondary/non-primary index
+  ) engine=InnoDB;
+  -- The index of table `T` is `(k, id)`.
+  ```
+  * diff between primary and non-primary index
+    * **primary index** stores the entire row data in table
+    * **non-primary index** stores the primary index of the row
+    * therefore, non-primary index needs to get primary index first, then get data using primary index
 
-Self-incremental key is good for performance and storage.
+* auto-increment primary key 
+  ```SQL
+  NOT NULL PRIMARY KEY AUTO_INCREMENT
+  ```
+  * why auto-increment primary key is recommended generally?
+    1. performance - auto-increment has better performance than non-auto-increment key, because B+ tree needs to keep the index in order, when inserting one row in the middle, should move some rows like array.
+    2. space - auto-increment key is int, which is smaller than general non-int primary key (e.g. ID num).
+    * there are also some cases auto-increment primary key is not necessary, like `key-value` data.
+
+* Self-incremental primary `key is good for performance and storage.
 
 * Composite index
   * left-prefix principle
