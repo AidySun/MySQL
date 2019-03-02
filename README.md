@@ -93,20 +93,50 @@ Each update would record one rollback operation. _from the latest status, it can
   ```SQL
   NOT NULL PRIMARY KEY AUTO_INCREMENT
   ```
-  * why auto-increment primary key is recommended generally?
-    1. performance - auto-increment has better performance than non-auto-increment key, because B+ tree needs to keep the index in order, when inserting one row in the middle, should move some rows like array.
-    2. space - auto-increment key is int, which is smaller than general non-int primary key (e.g. ID num).
-    * there are also some cases auto-increment primary key is not necessary, like `key-value` data.
+* Self-incremental primary key is good for performance and storage.
+* why auto-increment primary key is recommended generally?
+  1. performance - auto-increment has better performance than non-auto-increment key, because B+ tree needs to keep the index in order, when inserting one row in the middle, should move some rows like array.
 
-* Self-incremental primary `key is good for performance and storage.
+  2. space - auto-increment key is int, which is smaller than general
+       non-int primary key (e.g. ID num).
+  * there are also some cases auto-increment primary key is not necessary. Like `key-value` data.
+
+* Covering Index & Joint Index
+  * getting the results from index B+ tree directly, without visiting rows.
+  * is a general way to improve performance.
+  * e.g. `select ID from T where k between 1 and 10` on index `(k, ID)`
+  * Order of Joint Index 
+    * if having joint index `(a, b)`, it's unnecessary to set index `a`
+    * besides, if `a` is longer than `b`, `(a,b)` is good for space.
 
 * Composite index
-  * left-prefix principle
+  * left-prefix principle, e.g. `cardid`
     * `select * from T where id like '150%'` can use the index on `id`
-  * `key ('id', 'name')` means `order by id, name`
+  * `key ('id', 'name')` means `order by id, name`, order by id first.
 
 * index condition pushdown (since version 5.6)
   * filter index first, less access to real table data
+
+* When is necessary to rebuild index?
+  * data page may have 'hole' because of deleting, paging
+  * rebuild index will create a new index and reorder data, improve the data page performance and shrink table size.
+  * `alter table T engine=InnoDB` is another solution to get the same result. _(TODO)_
+
+* THINKING
+  ```SQL
+  CREATE TABLE `geek` (
+    `a` int(11) NOT NULL,
+    `b` int(11) NOT NULL,
+    `c` int(11) NOT NULL,
+    `d` int(11) NOT NULL,
+    PRIMARY KEY (`a`,`b`),
+    KEY `c` (`c`),
+    KEY `ca` (`c`,`a`),
+    KEY `cb` (`c`,`b`)
+  ) ENGINE=InnoDB;
+  ```
+  * index `ca` is unnecessary, because `ca` means order by `c` first then by `a`, at the same time `ab` is the primary key, therefore, `cb` has the same order of `c` with `ca`, keeping `cb` is enough.
+
 
 ## Lock
 1. Global Lock
