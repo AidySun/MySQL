@@ -16,6 +16,30 @@ $ mysql user@host/db_name
 # exe
 $ mysql -u root --sql --file /mydb.sql
 ```
+* check db status
+```SQL
+# current connection
+> select user();
+> select database():
+
+> show variables like 'port';
+> show variables like 'character%';
+
+> status;
+> show variables like '%max_connections%';
+> show status like 'Threads%';
+
+# user info
+> select distinct concat('user: ''',user,'''@''',host,''';')
+>    as query from mysql.user;
+
+# user permission
+> show grants for 'root'@'localhost';
+
+# data file path
+> show variables like 'datadir%';
+
+```
 
 ## mysqlsh
 
@@ -26,6 +50,7 @@ $ mysqlsh user@host/db_name
 
 # exec
 > \source /mydb.sql
+
 ```
 
 ## Notes
