@@ -38,6 +38,19 @@
 show variables like 'transaction_isolation';
 # READ-COMMITTED
 ```
+
+ISOLATION | DIRTY READ | NON REPEATABLE READ | PHANTOM READ
+:--:|:--:|:--:|:--:
+read-uncommitted | Y | Y | Y
+read-committed | N | Y | Y
+repatable-read | N | N | Y
+serializable | N | N | N
+
+* Problems (all occurs in the same transation)
+  * Dirty Read - read uncommitted data
+  * Non Repeatable Read - for the same row, two selections get diff results
+  * Phantom Read - for the same selection, executes two times get diff count of records
+
 * Implementation of Isolation
 Each update would record one rollback operation. _from the latest status, it can get to previous status using rollback operation. rollback operations would be deleted when there is no SQL would uses it, that is when there is no earlier read-view than the rollback log_
   * this is why long-time transaction would cause OOM

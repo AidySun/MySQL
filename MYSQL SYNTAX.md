@@ -85,3 +85,9 @@ FROM a
 LEFT JOIN b ON a.id=b.id 
 WHERE a.id=1;
 ```
+
+## Transation
+
+```SQL
+SET TRANSATION ISOLATION LEVEL READ COMMITTED;
+```
