@@ -187,16 +187,21 @@ Each update would record one rollback operation. _from the latest status, it can
 
 
 
-
 ## Types
-* DATETIME vs TIMESTAMP
+
+### DATETIME vs TIMESTAMP
+
 > MySQL converts TIMESTAMP values from the current time zone to UTC for storage, 
 > and back from UTC to the current time zone for retrieval. (This does not occur 
 > for other types such as DATETIME.) By default, the current time zone for each 
 > connection is the server's time. The time zone can be set on a per-connection basis.
 
+### Unicode
 
-
+* utf8mb4 - 4-byte UTF-8 unicode encoding
+* utf8mb3 - 3-byte UTF-8 unicode encoding
+  * utf8 is an alias of utf8mb3
+* TEXT - 64(K)?
 
 
 

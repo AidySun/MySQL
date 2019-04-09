@@ -86,6 +86,30 @@ LEFT JOIN b ON a.id=b.id
 WHERE a.id=1;
 ```
 
+## SELECT
+
+## INSERT
+
+* Insert if not exist
+```SQL
+INSERT INTO table_listnames (name, address, tele)
+SELECT * FROM (SELECT 'John', 'Doe', '022') AS tmp
+WHERE NOT EXISTS (
+    SELECT name FROM table_listnames WHERE name = 'John'
+) LIMIT 1;
+```
+
+* Update if exist
+```SQL
+REPLACE INTO `table` VALUES (5, 'John', 'Doe', SHA1('password')); 
+# OR
+INSERT INTO Devices(unique_id, time) 
+VALUES('$device_id', '$current_time') 
+ON DUPLICATE KEY UPDATE time = '$current_time';
+```
+
+## DELETE
+
 ## Transation
 
 ```SQL
