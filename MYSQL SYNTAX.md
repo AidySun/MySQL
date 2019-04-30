@@ -115,3 +115,13 @@ ON DUPLICATE KEY UPDATE time = '$current_time';
 ```SQL
 SET TRANSATION ISOLATION LEVEL READ COMMITTED;
 ```
+
+## Enable Slow Selection Log
+`show variables like "long%" / "slow%";`
+
+```yml
+[mysqld]
+slow_query_log = ON
+slow_query_log_file = /usr/local/mysql/data/slow.log
+long_query_time = 1
+```
