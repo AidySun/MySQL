@@ -17,7 +17,17 @@ $ mysql user@host/db_name
 $ mysql -u root --sql --file /mydb.sql
 ```
 
-* check db status
+
+* timezone
+```SQL
+SELECT @@global.time_zone, @@session.time_zone;
+select timediff(now(),convert_tz(now(),@@session.time_zone,'+00:00'));
+
+set time_zone = '+00:00'; # set connection/client time zone, not server's
+```
+
+## check db status
+
 ```SQL
 # current connection
 > select user();
@@ -42,13 +52,43 @@ $ mysql -u root --sql --file /mydb.sql
 
 ```
 
-* timezone
-```SQL
-SELECT @@global.time_zone, @@session.time_zone;
-select timediff(now(),convert_tz(now(),@@session.time_zone,'+00:00'));
+## DB analyze tools
 
-set time_zone = '+00:00'; # set connection/client time zone, not server's
-```
+1. `explain`
+2. `show engine innodb status;    # show db status, e.g. dead lock`
+
+* example
+  1. dead lock 
+    * preconditions
+      * isolation is *repeatable read*
+        * `set session transation isolation level repeatable read;`
+      * `set session autocommit=0;`
+
+    ```
+    create table t1 (
+    	...
+    	cell varchar(20) unique
+   	)engine=innodb;
+
+   	# transation 1
+   	start transation;
+   	insert into t1(cell) values (4444);
+   										# transation 2
+   										start transation;
+   										insert into t1(cell) values(5555);
+   	update t1 set cell=4000 where cell=4444;	# lock here
+   										update t1 set cell=5000 where cell=5555; 	# roll back transation 2
+    ```
+    * root couse
+      * `cell` type is `char`, but update uses `int` which creates the table lock.
+      * add quote would fix the dead lock
+
+## Tips
+
+* when the index would be ignored
+  * colume types are not matched, `where id=111;` while `id char`
+  * `join` tables with diff encoding, e.g. one table is `utf-8` and the other is `latin`
+
 
 ## mysqlsh
 
