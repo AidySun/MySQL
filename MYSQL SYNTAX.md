@@ -15,6 +15,10 @@ $ mysql user@host/db_name
 
 # exe
 $ mysql -u root --sql --file /mydb.sql
+
+# version
+select version();
+
 ```
 
 
@@ -82,6 +86,15 @@ set time_zone = '+00:00'; # set connection/client time zone, not server's
     * root couse
       * `cell` type is `char`, but update uses `int` which creates the table lock.
       * add quote would fix the dead lock
+
+* profiling
+```
+select @@profiling;
+set profiling=1;
+show profiles;
+show profile;  # last execution
+
+```
 
 ## Tips
 
