@@ -21,6 +21,20 @@ select version();
 
 ```
 
+* execute .sql file
+```SQL
+MySQL > source /mnt/d/player.sql
+
+C:\ > mysql -u root -pmypassword gikee_db < /mnt/d/player.sql
+
+```
+
+* show a table schema/columns
+```SQL
+MySQL > show create table myTable\G
+MySQL > describe myTable;
+```
+
 
 * timezone
 ```SQL
