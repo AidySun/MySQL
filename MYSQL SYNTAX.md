@@ -70,6 +70,13 @@ set time_zone = '+00:00'; # set connection/client time zone, not server's
 
 ```
 
+* Isolation
+
+```
+set transaction_isolation='READ-COMMITTED';             # global/server setting
+SET SESSION TRANSACTION ISOLATION LEVEL READ COMITTED;  # session/client setting
+```
+
 ## DB analyze tools
 
 1. `explain`

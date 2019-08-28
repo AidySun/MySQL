@@ -1,6 +1,10 @@
 # MySQL
 
+* ORM - object relation mapping
+  * Pthon - sqlalchemy
+
 ## Execute Path
+
 * Connector
   * long-time transaction will cause OOM
   * solutions for long-time transaction
@@ -43,13 +47,14 @@ ISOLATION | DIRTY READ | NON REPEATABLE READ | PHANTOM READ
 :--:|:--:|:--:|:--:
 read-uncommitted | Y | Y | Y
 read-committed | N | Y | Y
-repatable-read | N | N | Y
+repeatable-read | N | N | Y
 serializable | N | N | N
 
 * Problems (all occurs in the same transation)
   * Dirty Read - read uncommitted data
-  * Non Repeatable Read - for the same row, two selections get diff results
-  * Phantom Read - for the same selection, executes two times get diff count of records
+  * Non Repeatable Read - within one transation, for the same row, two selections get diff values (because of UPDATE)
+  * Phantom Read - for the same selection, executes two times get diff count of records (because of INSERT/DELETE)
+    * e.g. `select sum(x) from table1;`
 
 * Implementation of Isolation
 Each update would record one rollback operation. _from the latest status, it can get to previous status using rollback operation. rollback operations would be deleted when there is no SQL would uses it, that is when there is no earlier read-view than the rollback log_
@@ -150,6 +155,7 @@ Each update would record one rollback operation. _from the latest status, it can
   ```
   * index `ca` is unnecessary, because `ca` means order by `c` first then by `a`, at the same time `ab` is the primary key, therefore, `cb` has the same order of `c` with `ca`, keeping `cb` is enough.
 
+## Cursor
 
 ## Lock
 1. Global Lock
