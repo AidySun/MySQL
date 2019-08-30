@@ -192,7 +192,6 @@ Each update would record one rollback operation. _from the latest status, it can
 3. Row Lock
 
 
-
 ## Types
 
 ### DATETIME vs TIMESTAMP

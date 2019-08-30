@@ -201,9 +201,6 @@ long_query_time = 1
 ```
 
 ## ORDER BY
-
 * MySQL has 2 kinds of sorting
   * indexsort
   * filesort - sorting in memory when group by column is not index
-
-  
