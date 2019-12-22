@@ -192,6 +192,15 @@ Each update would record one rollback operation. _from the latest status, it can
 3. Row Lock
 
 
+## View
+
+* security - permission control, view encapsulates lower level table.
+* convenient and simple
+
+```
+CREATE VIEW AS SELECT ...
+```
+
 ## Types
 
 ### DATETIME vs TIMESTAMP

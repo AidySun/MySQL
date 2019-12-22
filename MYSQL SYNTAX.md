@@ -204,3 +204,34 @@ long_query_time = 1
 * MySQL has 2 kinds of sorting
   * indexsort
   * filesort - sorting in memory when group by column is not index
+
+## PROCEDURE
+
+* MySQL needs to set DELIMITER becuase MySQL would execute the syntax immediately when meets demimiter. 
+
+```
+DELIMITER //
+CREATE PROCEDURE `add_num` (IN n INT)
+BEGIN
+  DECLARE i INT;
+  DELLARE sum INT;
+
+  SET i = 1;
+  SET sum = 0;
+  WHILE i <= n DO
+    SET sum = sum + i;
+    set i = i + 1;
+  END WHILE;
+  SELECT sum;
+END //
+DELIMITER ;
+```
+
+* OUT parameter
+
+```
+CREATE PROCEDURE `get_max_score` (OUT max_score INT, IN class VARCHAR(16))
+BEGIN
+  SELECT MAX(s.score) FROM student s WHERE s.class = class INTO max_score;
+END
+```

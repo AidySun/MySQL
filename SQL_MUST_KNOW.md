@@ -92,3 +92,9 @@ Cient-server mode, server is `mysqld`
   * NDB - cluster
   * Archive 
 
+#### PROCEDURE
+
+```
+DECLARE @id INT = 1;
+SET @id = @id + 1;
+```
